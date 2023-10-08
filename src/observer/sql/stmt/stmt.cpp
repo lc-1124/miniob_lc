@@ -33,6 +33,9 @@ RC Stmt::create_stmt(Db *db, const Query &query, Stmt *&stmt)
   case SCF_SELECT: {
     return SelectStmt::create(db, query.sstr.selection, stmt);
   }
+  case SCF_DROP_TABLE: {
+    return SelectStmt::create(db, query.sstr.drop_table, stmt);
+  }
   default: {
       LOG_WARN("unknown query command");
     }

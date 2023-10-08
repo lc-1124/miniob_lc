@@ -166,7 +166,10 @@ void SessionStage::handle_request(StageEvent *event)
   }
 
   sev->push_callback(cb);
-
+  /**
+   * 将提取的sql作为参数，初始化下一阶段的stage
+   * 同时将session_event放入sql_event
+  */
   SQLStageEvent *sql_event = new SQLStageEvent(sev, sql);
   plan_cache_stage_->handle_event(sql_event);
 }

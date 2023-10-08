@@ -107,7 +107,7 @@ RC Db::drop_table(const char *table_name)
     rc = RC::FILE_REMOVE;
     return rc;
   }
-
+  //删除索引
   const TableMeta table_meta_to_delete = table->table_meta();
   for(int i = 0 ; i < table_meta_to_delete.index_num();i++){
     const IndexMeta* index_meta = table_meta_to_delete.index(i);
@@ -117,7 +117,14 @@ RC Db::drop_table(const char *table_name)
     LOG_ERROR("Failed to delete index file %s %s.", table_name,index_file_path);
     rc = RC::FILE_REMOVE;
     return rc;
+    }
   }
+  //删除缓冲池中的文件
+  BufferPoolManager &bpm = BufferPoolManager::instance();
+  rc = bpm.close_file(table_data_path.c_str());
+  if (rc != RC::SUCCESS) {
+    LOG_ERROR("Failed to create disk buffer pool of data file. file name=%s", table_data_path.c_str());
+    return rc;
   }
   opened_tables_.erase(table_name);
   delete table;

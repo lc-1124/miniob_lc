@@ -396,7 +396,9 @@ RC Table::init_record_handler(const char *base_dir)
 
   return rc;
 }
-
+std::string Table:: get_base_dir(){
+    return base_dir_;
+}
 RC Table::get_record_scanner(RecordFileScanner &scanner)
 {
   RC rc = scanner.open_scan(*data_buffer_pool_, nullptr);

@@ -40,5 +40,5 @@ public:
 
   Tuple * current_tuple() override;
 private:
-  ProjectTupl tuple_;
+  ProjectTuple tuple_;
 };

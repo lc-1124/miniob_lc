@@ -18,7 +18,8 @@ See the Mulan PSL v2 for more details. */
 #include <vector>
 #include <string>
 #include <unordered_map>
-
+#include <filesystem>
+#include <iostream>
 #include "rc.h"
 #include "sql/parser/parse_defs.h"
 
@@ -33,6 +34,7 @@ public:
   RC init(const char *name, const char *dbpath);
 
   RC create_table(const char *table_name, int attribute_count, const AttrInfo *attributes);
+  RC drop_table(const char *table_name);
 
   Table *find_table(const char *table_name) const;
 

@@ -119,7 +119,7 @@ RC Table::create(
   LOG_INFO("Successfully create table %s:%s", base_dir, name);
   return rc;
 }
-RC Table::drop(const char *meta_file ,const char *name)
+RC Table::drop(Trx *trx,const char *meta_file ,const char *name)
 {
   // RC rc = sync();//刷新所有脏页 这里不理解
 
@@ -127,6 +127,9 @@ RC Table::drop(const char *meta_file ,const char *name)
   for (Index *index : indexes_) {
     index->drop();
   }
+
+  //删除操作记录
+  RC rc=trx->delete_table(this);
 
   //清理Record Manageer
   record_handler_->close();
@@ -136,7 +139,7 @@ RC Table::drop(const char *meta_file ,const char *name)
   //清理Buffer Pool , 同时删除data_file
   std::string data_file = table_data_file(base_dir_.c_str(), name);
   BufferPoolManager &bpm = BufferPoolManager::instance();
-  RC rc = bpm.remove_file(data_file.c_str());
+   rc = bpm.remove_file(data_file.c_str());
   
   // 删除 meta file
   int remove_ret = remove(meta_file);

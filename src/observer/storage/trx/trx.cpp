@@ -121,6 +121,13 @@ void Trx::set_record_trx_id(Table *table, Record &record, int32_t trx_id, bool d
   *ptrx_id = trx_id;
 }
 
+RC Trx::delete_table(Table *table)
+{
+  operations_.erase(table);
+  //这里先删除其他不管
+  return RC::SUCCESS;
+}
+
 void Trx::get_record_trx_id(Table *table, const Record &record, int32_t &trx_id, bool &deleted)
 {
   const FieldMeta *trx_field = table->table_meta().trx_field();

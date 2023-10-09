@@ -83,7 +83,7 @@ RC Db::create_table(const char *table_name, int attribute_count, const AttrInfo 
   LOG_INFO("Create table success. table name=%s", table_name);
   return RC::SUCCESS;
 }
-RC Db::drop_table(const char *table_name)
+RC Db::drop_table(Trx *trx, const char *table_name)
 {
   RC rc = RC::SUCCESS;
   // check table_name
@@ -92,36 +92,14 @@ RC Db::drop_table(const char *table_name)
     return RC::SCHEMA_TABLE_NOT_EXIST;
   }
 
-  // //删除索引
-  // const TableMeta table_meta_to_delete = table->table_meta();
-  // for(int i = 0 ; i < table_meta_to_delete.index_num();i++){
-  //   const IndexMeta* index_meta = table_meta_to_delete.index(i);
-  //   const char * index_name = index_meta->name();
-  //   std::string index_file_path = table_index_file(path_.c_str() ,table_name, index_name );
-  //   if(std::remove(index_file_path.c_str()) != 0){
-  //   LOG_ERROR("Failed to delete index file %s %s.", table_name,index_file_path);
-  //   rc = RC::FILE_REMOVE;
-  //   return rc;
-  //   }
-  // }
   // 通过opened_tables打开该表，删除元数据文件和数据文件
   std::string meta_file = table_meta_file(path_.c_str(), table_name);
   Table *table = opened_tables_[table_name];
-  table->drop(meta_file.c_str() ,table_name);
+  
+  table->drop(trx,meta_file.c_str() ,table_name);
   opened_tables_.erase(table_name);
   delete table;
   LOG_INFO("Drop table success. table name=%s", table_name);
-  // std::string table_data_path = table_data_file(path_.c_str(), table_name);
-  // if(std::remove(table_file_path.c_str()) != 0){
-  //   LOG_ERROR("Failed to delete table file %s.", table_name);
-  //   rc = RC::FILE_REMOVE;
-  //   return rc;
-  // }
-  // if(std::remove(table_data_path.c_str()) != 0){
-  //   LOG_ERROR("Failed to delete data file %s.", table_name);
-  //   rc = RC::FILE_REMOVE;
-  //   return rc;
-  // }
   return RC::SUCCESS;
 }
 Table *Db::find_table(const char *table_name) const

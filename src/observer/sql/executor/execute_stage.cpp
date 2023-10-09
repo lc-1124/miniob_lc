@@ -487,7 +487,7 @@ RC ExecuteStage::do_drop_table(SQLStageEvent *sql_event)
   Trx * trx = session->current_trx();
   
   Db *db = session_event->session()->get_current_db();
-  RC rc = db->drop_table(drop_table.relation_name);
+  RC rc = db->drop_table(trx , drop_table.relation_name);
   if (rc == RC::SUCCESS) {
     session_event->set_response("SUCCESS\n");
   } else {

@@ -279,6 +279,10 @@ public:
    */
   RC flush_page(Frame &frame);
 
+  std::string file_name() const{
+    return file_name_;
+  }
+
   /**
    * 刷新所有页面到磁盘，即使pin count不是0
    */
@@ -325,6 +329,8 @@ public:
   RC create_file(const char *file_name);
   RC open_file(const char *file_name, DiskBufferPool *&bp);
   RC close_file(const char *file_name);
+  RC remove_file(const char *file_name);
+  
 
   RC flush_page(Frame &frame);
 

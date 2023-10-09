@@ -88,6 +88,13 @@ RC BplusTreeIndex::close()
   return RC::SUCCESS;
 }
 
+RC BplusTreeIndex::drop()
+{
+  RC rc=index_handler_.drop();
+  inited_=false;
+  return rc;
+}
+
 RC BplusTreeIndex::insert_entry(const char *record, const RID *rid)
 {
   return index_handler_.insert_entry(record + field_meta_.offset(), rid);

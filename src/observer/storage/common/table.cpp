@@ -119,7 +119,32 @@ RC Table::create(
   LOG_INFO("Successfully create table %s:%s", base_dir, name);
   return rc;
 }
+RC Table::drop(const char *meta_file ,const char *name)
+{
+  // RC rc = sync();//刷新所有脏页 这里不理解
 
+  // 删除索引
+  for (Index *index : indexes_) {
+    index->drop();
+  }
+
+  //清理Record Manageer
+  record_handler_->close();
+  delete record_handler_;
+  record_handler_ = nullptr;
+  
+  //清理Buffer Pool , 同时删除data_file
+  std::string data_file = table_data_file(base_dir_.c_str(), name);
+  BufferPoolManager &bpm = BufferPoolManager::instance();
+  RC rc = bpm.remove_file(data_file.c_str());
+  
+  // 删除 meta file
+  int remove_ret = remove(meta_file);
+  if(remove_ret !=0){
+    rc = RC::IOERR;
+    LOG_WARN("failed to remove tavle meta file: %s, message=%s",meta_file,strerror(errno));
+  }
+}
 RC Table::open(const char *meta_file, const char *base_dir, CLogManager *clog_manager)
 {
   // 加载元数据文件

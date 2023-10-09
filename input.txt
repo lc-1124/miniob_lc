@@ -1,0 +1,12 @@
+CREATE TABLE Drop_table_3(id int, t_name char);
+INSERT INTO Drop_table_3 VALUES (1,'OB');
+DROP TABLE Drop_table_3;
+INSERT INTO Drop_table_3 VALUES (1,'OB');
+SELECT * FROM Drop_table_3;
+
+CREATE TABLE Drop_table_6(id int, t_name char);
+CREATE INDEX index_id on Drop_table_6(id);
+INSERT INTO Drop_table_6 VALUES (1,'OB');
+SELECT * FROM Drop_table_6;
+DROP TABLE Drop_table_6;
+SELECT * FROM Drop_table_6;

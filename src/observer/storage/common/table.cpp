@@ -128,19 +128,26 @@ RC Table::drop(Trx *trx,const char *meta_file ,const char *name)
     index->drop();
   }
 
-  //删除操作记录
-  RC rc=trx->delete_table(this);
-
   //清理Record Manageer
   record_handler_->close();
   delete record_handler_;
   record_handler_ = nullptr;
   
+  //删除操作记录
+  RC rc=trx->delete_table(this);
+  if(rc!=RC::SUCCESS){
+    LOG_ERROR("Failed to drop table %s.",name);
+    return rc;
+  }
+  
   //清理Buffer Pool , 同时删除data_file
   std::string data_file = table_data_file(base_dir_.c_str(), name);
   BufferPoolManager &bpm = BufferPoolManager::instance();
-   rc = bpm.remove_file(data_file.c_str());
-  
+  rc = bpm.remove_file(data_file.c_str());
+  if (rc != RC::SUCCESS) {
+    LOG_ERROR("Failed to drop disk buffer pool of data file. file name=%s, message=%s", data_file.c_str(), strrc(rc));
+    return rc;
+  }
   // 删除 meta file
   int remove_ret = remove(meta_file);
   if(remove_ret !=0){
